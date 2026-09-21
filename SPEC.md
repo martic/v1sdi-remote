@@ -46,28 +46,40 @@ HDCP (`HCP`), auto scan (`ASN`).
 
 **CUT** isn't a separate command — set `TRS:2` then `ATO`.
 
-## MIDI facts (USB-B port, phase 2)
+## USB-only operation (primary route — RS-232 not required)
 
-Channel fixed at 1. **No Note messages** — buttons aren't MIDI-mapped. What
-MIDI does cover:
+The Parameter Address Map makes full control possible over the single USB-B
+cable — no RS-232. Verified addresses (Reference Manual p.14+):
 
-- **Input select**: Bank Select (CC0 = MSB, CC32 = LSB) then Program Change:
-  - MSB 00 / LSB 00, PC 00–03 → bus A input 1–4
-  - MSB 01 / LSB 00, PC 00–03 → bus B input 1–4
-  - MSB 50 / LSB 00, PC 00–07 → MEMORY 1–8
-- **CC18** (12H): A/B fader position (video transition)
-- **CC19** (13H): transition time
-- **CC20** (14H): transition effect type
-- **CC26**: OUTPUT FADE knob state
-- **CC28 / CC29**: CONTROL 1 / CONTROL 2 knobs
-- **CC10–CC16**: audio mixer levels (SDI1, SDI2, SDI3, HDMI3, HDMI4, MASTER …)
-- Buttons (AUTO, DSK, FREEZE, PinP, SPLIT) are **RS-232 only** — one more
-  reason the RS-232 route is the primary control surface.
+| Function                | SysEx address | Values                              |
+|-------------------------|---------------|-------------------------------------|
+| PGM (bus A) input       | `71 03 08`    | 0-3 = Input 1-4                     |
+| PST (bus B) input       | `71 03 09`    | 0-3 = Input 1-4                     |
+| [PinP] button           | `71 03 0A`    | 0/1                                 |
+| [SPLIT] button          | `71 03 0B`    | 0/1                                 |
+| Transition pattern      | `71 03 0C`    | 0=WIPE 1=MIX 2=CUT                  |
+| [DSK] button            | `71 03 0D`    | 0/1                                 |
+| Memory select           | `73 01 00`    | 0-7 = MEMORY 1-8                    |
+| [FREEZE] button         | `73 04 00`    | 00=off 20=long-press 40=on          |
+| A/B fader (transition)  | CC18          | 0=bus A end ... 127=bus B end       |
+| Read-back (tally)       | `73 02 xx`    | LED states, audio meters (RQ1)      |
 
-For deeper control (panel state etc.) the manual defines Roland SysEx RQ1/DT1
-(model ID 00 00 00 31, device ID 10H) with a parameter address map (p.14+).
+AUTO / CUT emulation: set the transition pattern, then move the A/B fader
+(CC18) — jump 0->127 with CUT for an instant cut, ramp for a timed transition.
 
-## Daemon — `v1sdi_rs232.py`
+SysEx framing: `F0 41 <10H device> 00 00 00 31 12 <addr> <data..> <sum> F7`
+(DT1 write) and `... 11 <addr> <size..> sum F7` (RQ1 read). Roland 7-bit
+checksum. Requires V-1SDI system program Ver.1.5+.
+
+### Daemon 2 — `v1sdi_midi.py` (USB-only, primary)
+
+Same HTTP API on port 8789: `/pgm?ch=`, `/pst?ch=`, `/cut`, `/auto`,
+`/trs?effect=`, `/pip`, `/split`, `/dsk`, `/freeze`, `/mem?m=`, `/status`.
+Needs `pip install python-rtmidi`; connect the V-1SDI USB-B port to the Pi.
+The RS-232 daemon (`v1sdi_rs232.py`) is retained as an alternative if MIDI
+enumeration ever misbehaves.
+
+## Daemon 1 — `v1sdi_rs232.py` (RS-232 alternative)
 
 HTTP on 127.0.0.1:8788 (GET for Companion HTTP Request, POST also supported):
 
