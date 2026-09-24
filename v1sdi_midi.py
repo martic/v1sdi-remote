@@ -133,10 +133,12 @@ class V1SDIMidi:
     def _on_msg(self, event, data=None):
         """Parse DT1 replies and periodic broadcasts from the switcher."""
         m = event[0]
-        if len(m) < 13 or m[0] != 0xF0 or m[1] != 0x41 or m[8] != 0x12:
+        # F0 41 dev 00 00 00 31 12 addr3 data... sum F7
+        # indices: 0=41@1, dev@2, model@3-6, cmd12@7, addr@8-10, data@11+
+        if len(m) < 13 or m[0] != 0xF0 or m[1] != 0x41 or m[7] != 0x12:
             return
-        addr = list(m[9:12])
-        data = list(m[12:-2]) if len(m) > 14 else [m[12]]
+        addr = list(m[8:11])
+        data = list(m[11:-2]) if len(m) > 13 else [m[11]]
         with self._lock:
             if addr == list(ADDR["video_sel_a"]):
                 self.state["pgm"] = data[0] + 1
