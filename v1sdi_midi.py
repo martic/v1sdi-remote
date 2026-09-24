@@ -90,6 +90,9 @@ class V1SDIMidi:
             self.rxin = rtmidi.MidiIn()
             self.rxin.open_virtual_port("v1sdi-in") if port_name is None \
                 else self._open_named_in(port_name)
+            self.rxin.set_callback(self._on_msg)
+            self.rxin.ignore_types(False, False, True)
+            threading.Thread(target=self._poll_loop, daemon=True).start()
         else:
             class Fake:
                 def send_message(self, m): self.last = m
@@ -126,6 +129,50 @@ class V1SDIMidi:
         with self._lock:
             self._send_sysex(rq1(addr, [0x00, 0x00, 0x01]))
         return "RQ1 sent"
+
+    def _on_msg(self, event, data=None):
+        """Parse DT1 replies and periodic broadcasts from the switcher."""
+        m = event[0]
+        if len(m) < 13 or m[0] != 0xF0 or m[1] != 0x41 or m[8] != 0x12:
+            return
+        addr = list(m[9:12])
+        data = list(m[12:-2]) if len(m) > 14 else [m[12]]
+        with self._lock:
+            if addr == list(ADDR["video_sel_a"]):
+                self.state["pgm"] = data[0] + 1
+            elif addr == list(ADDR["video_sel_b"]):
+                self.state["pst"] = data[0] + 1
+            elif addr == list(ADDR["trs_pattern"]):
+                self.state["trs"] = ["wipe", "mix", "cut"][data[0]]
+            elif addr == list(ADDR["pinp_button"]):
+                self.state["pinp"] = data[0]
+            elif addr == list(ADDR["split_button"]):
+                self.state["split"] = data[0]
+            elif addr == list(ADDR["dsk_button"]):
+                self.state["dsk"] = data[0]
+            self.last_response = f"read {addr} -> {data}"
+
+    def _poll_loop(self):
+        """RQ1-poll the switcher so /status mirrors the unit, not our echo."""
+        fast = [ADDR["video_sel_a"], ADDR["video_sel_b"]]
+        slow = [a for k, a in ADDR.items()
+                if k in ("pinp_button", "split_button", "dsk_button", "trs_pattern")]
+        n = 0
+        while True:
+            for addr in fast:
+                try:
+                    self._send_sysex(rq1(addr, [0, 0, 1]))
+                except Exception:
+                    pass
+                time.sleep(0.25)
+            n += 1
+            if n % 8 == 0:  # slow params every ~4s
+                for addr in slow:
+                    try:
+                        self._send_sysex(rq1(addr, [0, 0, 1]))
+                        time.sleep(0.05)
+                    except Exception:
+                        pass
 
     def fader(self, value):
         with self._lock:
