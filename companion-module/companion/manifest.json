@@ -1,0 +1,20 @@
+{
+	"id": "v1sdi",
+	"type": "connection",
+	"manufacturer": "Roland",
+	"products": ["V-1SDI"],
+	"shortname": "V-1SDI",
+	"keywords": ["Video Switcher", "Roland", "V-1SDI"],
+	"version": "1.0.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/martic/v1sdi-remote.git"
+	},
+	"bugs": "https://github.com/martic/v1sdi-remote/issues",
+	"runtime": {
+		"type": "node18",
+		"api": "node18-2",
+		"entrypoint": "../main.js",
+		"minimumVersion": "3"
+	}
+}
