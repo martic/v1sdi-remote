@@ -1,10 +1,17 @@
 {
+	"name": "v1sdi",
 	"id": "v1sdi",
 	"type": "connection",
 	"manufacturer": "Roland",
-	"products": ["V-1SDI"],
+	"products": [
+		"V-1SDI"
+	],
 	"shortname": "V-1SDI",
-	"keywords": ["Video Switcher", "Roland", "V-1SDI"],
+	"keywords": [
+		"Video Switcher",
+		"Roland",
+		"V-1SDI"
+	],
 	"version": "1.0.0",
 	"repository": {
 		"type": "git",
