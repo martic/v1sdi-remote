@@ -4,8 +4,14 @@
 	"shortname": "V-1SDI",
 	"description": "Control the Roland V-1SDI switcher via the v1sdi-remote daemon",
 	"manufacturer": "Roland",
-	"products": ["V-1SDI"],
-	"keywords": ["Video Switcher", "Roland", "V-1SDI"],
+	"products": [
+		"V-1SDI"
+	],
+	"keywords": [
+		"Video Switcher",
+		"Roland",
+		"V-1SDI"
+	],
 	"version": "1.0.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/martic/v1sdi-remote.git",
@@ -16,5 +22,10 @@
 		"api": "nodejs-ipc",
 		"apiVersion": "0.0.0",
 		"entrypoint": "../main.js"
-	}
+	},
+	"maintainers": [
+		{
+			"name": "Martin"
+		}
+	]
 }
