@@ -97,4 +97,4 @@ Chain: Stream Deck (USB) → Companion (Pi) → v1sdi_midi.py → USB-B → V-1S
 - [x] Protocol verified against official Reference Manual (PDF in `docs/`)
 - [x] SysEx framing + checksum validated in tests
 - [x] Daemon HTTP API tested end-to-end
-- [ ] Hardware verification on the church unit
+- [x] Hardware verification on the church unit (DT1 writes take effect, RQ1 reads + periodic broadcasts verified on CompanionPi)
