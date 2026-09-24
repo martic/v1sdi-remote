@@ -17,7 +17,7 @@ class V1SDIInstance extends InstanceBase {
 		this.startPolling()
 	}
 
-	get configFields() {
+	getConfigFields() {
 		return [
 			{
 				type: 'textinput',
