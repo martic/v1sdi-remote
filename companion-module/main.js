@@ -1,4 +1,4 @@
-import { InstanceBase, InstanceStatus, runEntrypoint } from '@companion-module/base'
+import { InstanceBase, InstanceStatus } from '@companion-module/base'
 
 const BASE_DEFAULT = 'http://127.0.0.1:8789'
 const CH_FIELD = { type: 'number', label: 'Input', id: 'ch', min: 1, max: 4, default: 1 }
@@ -152,4 +152,4 @@ class V1SDIInstance extends InstanceBase {
 	}
 }
 
-runEntrypoint(V1SDIInstance, [])
+export default V1SDIInstance
