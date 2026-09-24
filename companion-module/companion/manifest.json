@@ -23,5 +23,6 @@
 		"api": "node18-2",
 		"entrypoint": "../main.js",
 		"minimumVersion": "3"
-	}
+	},
+	"description": "Control the Roland V-1SDI switcher via the v1sdi-remote daemon"
 }
