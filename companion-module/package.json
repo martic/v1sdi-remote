@@ -1,8 +1,14 @@
 {
-	"name": "v1sdi-remote",
+	"name": "v1sdi",
 	"manufacturer": "Roland",
-	"products": ["V-1SDI (via v1sdi-remote daemon)"],
-	"keywords": ["Video Switcher", "Roland", "V-1SDI"],
+	"products": [
+		"V-1SDI"
+	],
+	"keywords": [
+		"Video Switcher",
+		"Roland",
+		"V-1SDI"
+	],
 	"homepage": "https://github.com/martic/v1sdi-remote",
 	"main": "main.js",
 	"type": "module",
