@@ -54,6 +54,78 @@ class V1SDIInstance extends InstanceBase {
 		}, 1000)
 	}
 
+	setPresets() {
+		const presets = {}
+
+		const mk = (id, name, text, bgcolor, actionId, actionOpts, feedbackId, fbOpts, fbStyle) => {
+			presets[id] = {
+				name,
+				type: 'simple',
+				keywords: ['roland', 'v1sdi', 'switcher'],
+				style: {
+					text,
+					size: 'auto',
+					color: combineRgb(255, 255, 255),
+					bgcolor,
+				},
+				steps: [
+					{
+						down: [{ actionId, options: actionOpts }],
+						up: [],
+					},
+				],
+				feedbacks: feedbackId
+					? [{ feedbackId, options: fbOpts, style: fbStyle }]
+					: [],
+			}
+		}
+
+		const grey = combineRgb(45, 45, 45)
+		const red = combineRgb(180, 30, 30)
+		const green = combineRgb(30, 120, 30)
+		const blue = combineRgb(30, 60, 160)
+		const amber = combineRgb(170, 110, 20)
+
+		// PGM 1-4 (red when live)
+		for (let n = 1; n <= 4; n++) {
+			mk(`pgm_${n}`, `PGM: take input ${n} to program`, `PGM ${n}`, grey,
+				'pgm', { ch: n }, 'pgm_is', { ch: n }, { bgcolor: red })
+		}
+		// PST 1-4 (green when on preview)
+		for (let n = 1; n <= 4; n++) {
+			mk(`pst_${n}`, `PST: send input ${n} to preview`, `PST ${n}`, grey,
+				'pst', { ch: n }, 'pst_is', { ch: n }, { bgcolor: green })
+		}
+		// Takes
+		mk('auto', 'AUTO: timed take', 'AUTO', amber, 'auto', {}, null, null, null)
+		mk('cut', 'CUT: instant take', 'CUT', red, 'cut', {}, null, null, null)
+		// Transition types (blue when selected)
+		mk('trs_wipe', 'Transition: Wipe', 'WIPE', grey, 'trs', { effect: '0' }, 'trs_is', { eff: 'wipe' }, { bgcolor: blue })
+		mk('trs_mix', 'Transition: Mix', 'MIX', grey, 'trs', { effect: '1' }, 'trs_is', { eff: 'mix' }, { bgcolor: blue })
+		mk('trs_cut', 'Transition: Cut', 'TRS CUT', grey, 'trs', { effect: '2' }, 'trs_is', { eff: 'cut' }, { bgcolor: blue })
+		// Toggles (blue when active)
+		mk('pip', 'PinP toggle', 'PinP', grey, 'pip', {}, 'pip_on', {}, { bgcolor: blue })
+		mk('split', 'SPLIT toggle', 'SPLIT', grey, 'split', {}, 'split_on', {}, { bgcolor: blue })
+		mk('dsk', 'DSK toggle', 'DSK', grey, 'dsk', {}, 'dsk_on', {}, { bgcolor: blue })
+		mk('freeze', 'FREEZE input', 'FREEZE', grey, 'freeze', {}, null, null, null)
+		// Memories 1-8
+		for (let n = 1; n <= 8; n++) {
+			mk(`mem_${n}`, `Memory ${n}`, `MEM ${n}`, grey, 'mem', { m: n - 1 }, null, null, null)
+		}
+
+		this.setPresetDefinitions(
+			[
+				{
+					id: 'v1sdi_main',
+					name: 'Roland V-1SDI',
+					description: 'Switcher functions with live tally feedback',
+					definitions: Object.keys(presets),
+				},
+			],
+			presets,
+		)
+	}
+
 	send(path) {
 		return async () => {
 			try {
