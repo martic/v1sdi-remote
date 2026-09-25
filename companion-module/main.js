@@ -14,6 +14,7 @@ class V1SDIInstance extends InstanceBase {
 		this.config = config
 		this.updateStatus(InstanceStatus.Connecting)
 		this.setActionDefinitions(this.getActionDefinitions())
+		this.setFeedbackDefinitions(this.getFeedbackDefinitions())
 		this.startPolling()
 	}
 
