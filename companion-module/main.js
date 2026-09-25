@@ -48,7 +48,7 @@ class V1SDIInstance extends InstanceBase {
 				const j = await this.apiGet('/status')
 				this.state = j.state || {}
 				this.updateStatus(InstanceStatus.Ok)
-				this.checkFeedbacks()
+				this.checkFeedbacks(...['pgm_is', 'pst_is', 'trs_is', 'dsk_on', 'pip_on', 'split_on'])
 			} catch (e) {
 				this.updateStatus(InstanceStatus.UnknownError, 'daemon unreachable: ' + e.message)
 			}
