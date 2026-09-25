@@ -12,7 +12,7 @@
 		"Roland",
 		"V-1SDI"
 	],
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"license": "MIT",
 	"repository": "git+https://github.com/martic/v1sdi-remote.git",
 	"bugs": "https://github.com/martic/v1sdi-remote/issues",
