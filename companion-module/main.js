@@ -120,7 +120,15 @@ class V1SDIInstance extends InstanceBase {
 					id: 'v1sdi_main',
 					name: 'Roland V-1SDI',
 					description: 'Switcher functions with live tally feedback',
-					definitions: Object.keys(presets),
+					definitions: [
+						{
+							id: 'v1sdi_switch',
+							type: 'simple',
+							name: 'Switcher functions',
+							description: 'All switcher controls with tally',
+							presets: Object.keys(presets),
+						},
+					],
 				},
 			],
 			presets,
