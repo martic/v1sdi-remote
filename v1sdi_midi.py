@@ -268,7 +268,7 @@ def build_server(v):
             self._json(result, 200 if "error" not in result else 400)
 
         def log_message(self, fmt=None, *args, **kwargs):
-            pass
+            print(self.requestline, flush=True)
 
     return Handler
 
