@@ -136,8 +136,10 @@ class V1SDIInstance extends InstanceBase {
 		)
 	}
 
-	send(path) {
-		return async () => {
+	send(pathFn) {
+		return async (evt) => {
+			const opts = evt?.options ?? {}
+			const path = typeof pathFn === 'function' ? pathFn(opts) : pathFn
 			try {
 				await this.apiGet(path)
 				this.updateStatus(InstanceStatus.Ok)
@@ -151,8 +153,8 @@ class V1SDIInstance extends InstanceBase {
 	getActionDefinitions() {
 		const chField = CH_FIELD
 		return {
-			pgm: { name: 'PGM: take input to program', options: [chField], callback: this.send('/pgm?ch=') },
-			pst: { name: 'PST: send input to preview', options: [chField], callback: this.send('/pst?ch=') },
+			pgm: { name: 'PGM: take input to program', options: [chField], callback: this.send((o) => `/pgm?ch=${o.ch ?? 1}`) },
+									pst: { name: 'PST: send input to preview', options: [chField], callback: this.send((o) => `/pst?ch=${o.ch ?? 1}`) },
 			auto: { name: 'AUTO (timed take)', options: [], callback: this.send('/auto') },
 			cut: { name: 'CUT (instant take)', options: [], callback: this.send('/cut') },
 			trs: {
@@ -170,7 +172,7 @@ class V1SDIInstance extends InstanceBase {
 						default: '1',
 					},
 				],
-				callback: this.send('/trs?effect='),
+				callback: this.send((o) => `/trs?effect=${o.effect ?? '1'}`),
 			},
 			pip: { name: 'PinP toggle', options: [], callback: this.send('/pip') },
 			split: { name: 'SPLIT toggle', options: [], callback: this.send('/split') },
@@ -188,7 +190,7 @@ class V1SDIInstance extends InstanceBase {
 						default: 0,
 					},
 				],
-				callback: this.send('/mem?m='),
+				callback: this.send((o) => `/mem?m=${o.m ?? 0}`),
 			},
 		}
 	}
